@@ -4,7 +4,7 @@ const { handleRespawnRequest, handleSpawnables, stopSpawnLoop } = require('./src
 const { handleStateUpdate } = require('./src/movementHandler')
 const { handleAttack } = require('./src/attackHandler')
 const { collectibleCollected, addScore, subtractScore, resetScores } = require('./src/scoreManager')
-
+const { cleanupGame } = require('./src/gameRooms');
 
 const wss = new WebSocket.Server({ port: 8080 });
 console.log("WebSocket server running on ws://localhost:8080");
@@ -49,6 +49,10 @@ wss.on('connection', (ws) => {
                 break
             case 'subtract_score':
                 subtractScore(ws, msg, wss)
+                break
+            case 'game_over':
+                const gameId = ws.gameId;
+                cleanupGame(gameId);
                 break
         }
     });
